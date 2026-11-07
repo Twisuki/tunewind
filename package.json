@@ -1,0 +1,51 @@
+{
+  "name": "tunewind",
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@11.24.0",
+  "description": "A highly configurable, strongly constrained, and extensible atomic CSS solution and design system",
+  "author": "Twisuki",
+  "homepage": "https://github.com/Twisuki/tunewind#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Twisuki/tunewind.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Twisuki/tunewind/issues"
+  },
+  "keywords": [
+    "atomic-css",
+    "css-variables",
+    "design-system",
+    "design-tokens",
+    "tailwind",
+    "tailwindcss"
+  ],
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "lint": "eslint .",
+    "fix": "eslint . --fix",
+    "commitlint": "commitlint --edit",
+    "prepare": "husky",
+    "build": "tsdown",
+    "prepack": "pnpm build"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^10.0.0",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "eslint-plugin-format": "^2.0.1",
+    "husky": "^9.1.7",
+    "tsdown": "^0.23.5",
+    "typescript": "^6.0.3"
+  }
+}
