@@ -1,4 +1,6 @@
-export const PLUGIN_NAME = "tunewind"
+export const PRESET_PLUGIN_NAME = "tunewind-preset"
+
+export const GUARD_PLUGIN_NAME = "tunewind-guard"
 
 export const AT_RULE_NAME = "tunewind"
 

@@ -1,9 +1,8 @@
 import type { AtRule, Plugin, PluginCreator, Root } from "postcss"
 import { parse } from "postcss"
-import { loadConfig } from "@/config/loader"
-import { AT_RULE_NAME, PLUGIN_NAME } from "@/const"
+import { AT_RULE_NAME, PRESET_PLUGIN_NAME } from "@/const"
 
-export interface TunewindPluginOptions {
+interface PresetOptions {
   cwd?: string
 }
 
@@ -15,15 +14,13 @@ function findAtRules(root: Root): AtRule[] {
   return atRules
 }
 
-export const tunewind: PluginCreator<TunewindPluginOptions> = Object.assign(
-  (options: TunewindPluginOptions = {}): Plugin => ({
-    postcssPlugin: PLUGIN_NAME,
-    async Once(root: Root) {
+export const preset: PluginCreator<PresetOptions> = Object.assign(
+  (_options: PresetOptions = {}): Plugin => ({
+    postcssPlugin: PRESET_PLUGIN_NAME,
+    Once(root: Root) {
       const atRules = findAtRules(root)
       if (atRules.length === 0)
         return
-
-      await loadConfig(options.cwd)
 
       const css: string = ""
       if (css.length === 0) {
