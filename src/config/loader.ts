@@ -5,17 +5,11 @@ import process from "node:process"
 import { pathToFileURL } from "node:url"
 import { z } from "zod"
 import { configSchema } from "@/config/schema"
+import { CONFIG_FILES } from "@/const"
 import { text } from "@/text"
 
-const configFiles = [
-  "tune.config.ts",
-  "tune.config.mts",
-  "tune.config.js",
-  "tune.config.mjs",
-]
-
 export function findConfigFile(cwd: string = process.cwd()): string | undefined {
-  for (const name of configFiles) {
+  for (const name of CONFIG_FILES) {
     const file = resolve(cwd, name)
     if (existsSync(file))
       return file
@@ -26,7 +20,7 @@ export function findConfigFile(cwd: string = process.cwd()): string | undefined 
 export async function loadConfig(cwd: string = process.cwd()): Promise<TuneConfig> {
   const file = findConfigFile(cwd)
   if (!file)
-    throw new Error(text.config.fileNotFound(cwd, configFiles))
+    throw new Error(text.config.fileNotFound(cwd, CONFIG_FILES))
 
   const mod: { default?: unknown, config?: unknown } = await import(pathToFileURL(file).href)
   const input = mod.default ?? mod.config

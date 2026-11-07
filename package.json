@@ -53,6 +53,9 @@
     "build": "tsdown",
     "prepack": "pnpm build"
   },
+  "peerDependencies": {
+    "postcss": "^8.4.0"
+  },
   "dependencies": {
     "zod": "^4.6.7"
   },
@@ -64,6 +67,7 @@
     "eslint": "^10.14.0",
     "eslint-plugin-format": "^2.0.1",
     "husky": "^9.1.7",
+    "postcss": "^8.5.32",
     "tsdown": "^0.23.5",
     "typescript": "^6.0.3"
   }
