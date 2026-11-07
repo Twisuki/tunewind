@@ -37,6 +37,9 @@
     "build": "tsdown",
     "prepack": "pnpm build"
   },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^10.0.0",
     "@commitlint/cli": "^21.2.4",
