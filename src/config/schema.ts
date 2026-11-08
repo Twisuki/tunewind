@@ -3,7 +3,7 @@ import { COLOR_FAMILIES, COLOR_SHADES } from "@/const/tailwind"
 import { text } from "@/text"
 
 /** css length with an explicit unit, such as `4px` or `1rem` */
-const cssLength = z.string().regex(/^(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em)$/)
+const cssLength = z.string().regex(/^(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem)$/)
 
 /** any css color value */
 const colorValue = z.string().min(1)
@@ -65,13 +65,12 @@ export const unitSchema = z.union([
   z.strictObject({
     /** unit length */
     value: cssLength,
+    /** smallest usable number */
+    min: z.number().min(0).optional(),
     /** allowed size number precision */
     step: z.number().positive().optional(),
-    /** allowed size number upper bound, `auto` takes twice the next larger unit */
-    max: z.union([
-      z.number().positive(),
-      z.literal("auto"),
-    ]).optional(),
+    /** allowed size number upper bound */
+    max: z.number().positive().optional(),
   }),
 ])
 
@@ -88,13 +87,12 @@ export const breakpointSchema = z.union([
 
 /** size system, units and breakpoints */
 export const sizeSchema = z.strictObject({
+  /** default smallest usable number for all units */
+  min: z.number().min(0).optional(),
   /** default size number precision for all units */
   step: z.number().positive().optional(),
-  /** default size number upper bound for all units, `auto` takes twice the next larger unit */
-  max: z.union([
-    z.number().positive(),
-    z.literal("auto"),
-  ]).optional(),
+  /** default size number upper bound for all units */
+  max: z.number().positive().optional(),
   /** units, key to unit, must define a `default` unit */
   units: z
     .record(keySchema, unitSchema)
