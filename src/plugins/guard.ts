@@ -1,5 +1,5 @@
 import type { Plugin, PluginCreator } from "postcss"
-import { GUARD_PLUGIN_NAME } from "@/const"
+import { GUARD_PLUGIN_NAME } from "@/const/postcss"
 
 interface GuardOptions {
   cwd?: string

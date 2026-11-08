@@ -5,7 +5,7 @@ import process from "node:process"
 import { pathToFileURL } from "node:url"
 import { z } from "zod"
 import { configSchema } from "@/config/schema"
-import { CONFIG_FILES } from "@/const"
+import { CONFIG_FILES } from "@/const/config"
 import { text } from "@/text"
 
 export function findConfigFile(cwd: string = process.cwd()): string | undefined {

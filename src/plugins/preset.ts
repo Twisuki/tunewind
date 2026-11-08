@@ -1,6 +1,6 @@
 import type { AtRule, Plugin, PluginCreator, Root } from "postcss"
 import { parse } from "postcss"
-import { AT_RULE_NAME, PRESET_PLUGIN_NAME } from "@/const"
+import { AT_RULE_NAME, PRESET_PLUGIN_NAME } from "@/const/postcss"
 
 interface PresetOptions {
   cwd?: string

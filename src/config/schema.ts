@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { COLOR_FAMILIES, COLOR_SHADES } from "@/const"
+import { COLOR_FAMILIES, COLOR_SHADES } from "@/const/tailwind"
 import { text } from "@/text"
 
 /** css length with an explicit unit, such as `4px` or `1rem` */
