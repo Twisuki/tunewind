@@ -37,8 +37,6 @@ export const opacitySchema = z.record(keySchema, z.number().min(0).max(100))
 
 /** color scheme, overriding the global layers */
 export const schemeSchema = z.strictObject({
-  /** scheme name, defaults to its key */
-  name: z.string().min(1).optional(),
   /** variant prefix, such as `dark` for `dark:bg-primary` */
   prefix: z.string().min(1).optional(),
   /** scheme palette */
