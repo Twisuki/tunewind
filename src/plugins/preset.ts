@@ -4,7 +4,7 @@ import { loadConfig } from "@/config/loader"
 import { AT_RULE_NAME, PRESET_PLUGIN_NAME } from "@/const/postcss"
 import { generate } from "@/generate"
 
-interface PresetOptions {
+export interface PresetOptions {
   cwd?: string
 }
 

@@ -1,7 +1,7 @@
 import type { Plugin, PluginCreator } from "postcss"
 import { GUARD_PLUGIN_NAME } from "@/const/postcss"
 
-interface GuardOptions {
+export interface GuardOptions {
   cwd?: string
   strict?: boolean
 }
