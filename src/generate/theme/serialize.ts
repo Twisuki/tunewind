@@ -1,3 +1,4 @@
+import type { TuneOpacity } from "@/config/schema"
 import type { ThemeTable } from "@/generate/theme/types"
 
 /** build the content of a theme block from the color table */
@@ -17,12 +18,17 @@ export function buildContent(table: ThemeTable): string[] {
   return content
 }
 
-/** wrap theme content into a block, resetting the color namespace for the default theme */
-export function wrapTheme(content: string[], theme?: string): string[] {
+/** build the content of a theme block from the opacity mapping */
+export function buildOpacity(opacity: TuneOpacity): string[] {
+  return Object.entries(opacity).map(([key, value]) => `  --opacity-${key}: ${value}%;`)
+}
+
+/** wrap theme content into a block, resetting the namespace for the default theme */
+export function wrapTheme(content: string[], space: string, theme?: string): string[] {
   if (theme === undefined) {
     return [
       "@theme {",
-      "  --color-*: initial;",
+      `  --${space}-*: initial;`,
       ...content,
       "}",
     ]
