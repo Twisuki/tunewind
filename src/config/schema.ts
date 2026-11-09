@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { STRICT_MODES } from "@/const/strict"
 import { COLOR_FAMILIES, COLOR_SHADES } from "@/const/tailwind"
 import { text } from "@/text"
 
@@ -101,12 +102,31 @@ export const sizeSchema = z.strictObject({
   breakpoints: z.record(keySchema, breakpointSchema).optional(),
 })
 
+/** strict flags, every key allows the listed escape */
+export const strictFlagsSchema = z.strictObject({
+  /** allow arbitrary values such as `w-[123px]` */
+  arbitrary: z.boolean().optional(),
+  /** allow raw color family names such as `text-sky-600` */
+  family: z.boolean().optional(),
+  /** allow the raw prefix to bypass the guard */
+  bypass: z.boolean().optional(),
+})
+
+/** strict mode, a switch, a mode name, or explicit flags */
+export const strictSchema = z.union([
+  z.boolean(),
+  z.enum(STRICT_MODES),
+  strictFlagsSchema,
+])
+
 /** tunewind config */
 export const configSchema = z.strictObject({
   /** color theme */
   theme: themeSchema.optional(),
   /** size system */
   size: sizeSchema.optional(),
+  /** strict mode */
+  strict: strictSchema.optional(),
 })
 
 export type TunePalette = z.output<typeof paletteSchema>
@@ -117,4 +137,6 @@ export type TuneTheme = z.output<typeof themeSchema>
 export type TuneUnit = z.output<typeof unitSchema>
 export type TuneBreakpoint = z.output<typeof breakpointSchema>
 export type TuneSize = z.output<typeof sizeSchema>
+export type TuneStrictFlags = z.output<typeof strictFlagsSchema>
+export type TuneStrict = z.output<typeof strictSchema>
 export type TuneConfig = z.output<typeof configSchema>
