@@ -49,7 +49,13 @@ export type ColorFamily = (typeof COLOR_FAMILIES)[number]
 /** shade number */
 export type ColorShade = (typeof COLOR_SHADES)[number]
 
-/** tailwind default palette, snapshot of tailwindcss 4.3.5 theme.css */
+/** flat colors */
+export const FLAT_COLORS = {
+  white: "#fff",
+  black: "#000",
+} as const
+
+/** tailwind default palette */
 export const PALETTE = {
   amber: {
     50: "oklch(98.7% 0.022 95.277)",
