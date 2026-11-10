@@ -1,10 +1,10 @@
 import type { AtRule, Plugin, PluginCreator, Root } from "postcss"
 import { parse } from "postcss"
 import { loadConfig } from "@/config/loader"
-import { AT_RULE_NAME, PRESET_PLUGIN_NAME } from "@/const/postcss"
-import { generate } from "@/generate"
+import { AT_RULE_NAME, PREPROCESS_PLUGIN_NAME } from "@/const/postcss"
+import { main } from "@/preprocess"
 
-export interface PresetOptions {
+export interface PreprocessOptions {
   cwd?: string
 }
 
@@ -16,15 +16,15 @@ function findAtRules(root: Root): AtRule[] {
   return atRules
 }
 
-export const preset: PluginCreator<PresetOptions> = Object.assign(
-  (options: PresetOptions = {}): Plugin => ({
-    postcssPlugin: PRESET_PLUGIN_NAME,
+export const preprocess: PluginCreator<PreprocessOptions> = Object.assign(
+  (options: PreprocessOptions = {}): Plugin => ({
+    postcssPlugin: PREPROCESS_PLUGIN_NAME,
     async Once(root: Root) {
       const atRules = findAtRules(root)
       if (atRules.length === 0)
         return
 
-      const css = generate(await loadConfig(options.cwd))
+      const css = main(await loadConfig(options.cwd))
       if (css.length === 0) {
         atRules.forEach(atRule => atRule.remove())
         return

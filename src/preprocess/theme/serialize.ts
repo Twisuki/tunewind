@@ -1,5 +1,5 @@
 import type { TuneOpacity } from "@/config/schema"
-import type { ThemeTable } from "@/generate/theme/types"
+import type { ThemeTable } from "@/preprocess/theme/types"
 import { FLAT_COLORS } from "@/const/tailwind"
 
 /** theme namespace reset by a block */

@@ -1,5 +1,5 @@
 import type { TuneBreakpoint, TuneUnit } from "@/config/schema"
-import type { SizeBreakpoint, SizeUnit } from "@/generate/size/types"
+import type { SizeBreakpoint, SizeUnit } from "@/preprocess/size/types"
 import { text } from "@/text"
 
 /** resolve one scope of units into size units */
@@ -11,7 +11,7 @@ export function resolveUnits(units: Record<string, TuneUnit>, min?: number, max?
     const bound = options?.max ?? max
 
     if (bound === undefined)
-      throw new Error(text.generate.maxMissing(name))
+      throw new Error(text.preprocess.maxMissing(name))
 
     return {
       name,

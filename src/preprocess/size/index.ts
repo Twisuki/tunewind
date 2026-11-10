@@ -1,6 +1,6 @@
 import type { TuneConfig } from "@/config/schema"
-import { parseBreakpoints, resolveUnits } from "@/generate/size/normalize"
-import { buildKeys, buildUnits, wrapMedia, wrapTheme } from "@/generate/size/serialize"
+import { parseBreakpoints, resolveUnits } from "@/preprocess/size/normalize"
+import { buildKeys, buildUnits, wrapMedia, wrapTheme } from "@/preprocess/size/serialize"
 import { text } from "@/text"
 
 /** build the css of the size system and its breakpoints */
@@ -28,7 +28,7 @@ export function buildSize(config: TuneConfig): string {
   for (const breakpoint of breakpoints) {
     for (const unit of Object.keys(breakpoint.units)) {
       if (!(unit in size.units))
-        throw new Error(text.generate.unknownUnit(breakpoint.name, unit))
+        throw new Error(text.preprocess.unknownUnit(breakpoint.name, unit))
     }
 
     units = {

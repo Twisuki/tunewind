@@ -1,6 +1,6 @@
 import type { TunePalette, TuneShade } from "@/config/schema"
 import type { ColorShade } from "@/const/tailwind"
-import type { ThemePalette, ThemeTable, ThemeValue } from "@/generate/theme/types"
+import type { ThemePalette, ThemeTable, ThemeValue } from "@/preprocess/theme/types"
 import { COLOR_FAMILIES, COLOR_SHADES, PALETTE } from "@/const/tailwind"
 import { text } from "@/text"
 
@@ -47,7 +47,7 @@ function buildTable(themePalette: ThemePalette, shade: TuneShade): ThemeTable {
     for (const [key, colorShade] of Object.entries(shade)) {
       const value = scale.get(colorShade)
       if (value === undefined)
-        throw new Error(text.generate.shadeMissing(name, colorShade))
+        throw new Error(text.preprocess.shadeMissing(name, colorShade))
 
       values.set(key, value)
     }

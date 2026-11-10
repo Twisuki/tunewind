@@ -108,7 +108,7 @@ export const strictFlagsSchema = z.strictObject({
   arbitrary: z.boolean().optional(),
   /** allow raw color family names such as `text-sky-600` */
   family: z.boolean().optional(),
-  /** allow the raw prefix to bypass the guard */
+  /** allow the raw prefix to bypass the postprocess stage */
   bypass: z.boolean().optional(),
 })
 

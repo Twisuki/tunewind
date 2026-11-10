@@ -1,4 +1,4 @@
 import { config } from "@/text/config"
-import { generate } from "@/text/generate"
+import { preprocess } from "@/text/preprocess"
 
-export const text = { config, generate }
+export const text = { config, preprocess }

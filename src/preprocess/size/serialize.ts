@@ -1,4 +1,4 @@
-import type { SizeUnit } from "@/generate/size/types"
+import type { SizeUnit } from "@/preprocess/size/types"
 
 function unitName(unit: SizeUnit): string {
   return unit.name === "default"

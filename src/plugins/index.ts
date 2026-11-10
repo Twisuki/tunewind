@@ -1,4 +1,4 @@
-import { guard } from "@/plugins/guard"
-import { preset } from "@/plugins/preset"
+import { postprocess } from "@/plugins/postprocess"
+import { preprocess } from "@/plugins/preprocess"
 
-export const tunewind = { preset, guard }
+export const tunewind = { preprocess, postprocess }

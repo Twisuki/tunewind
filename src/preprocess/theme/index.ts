@@ -1,7 +1,7 @@
 import type { TuneConfig, TuneOpacity, TunePalette, TuneShade } from "@/config/schema"
-import type { ThemeTable, ThemeValue } from "@/generate/theme/types"
-import { normalize } from "@/generate/theme/normalize"
-import { buildContent, buildOpacity, customVariant, wrapTheme } from "@/generate/theme/serialize"
+import type { ThemeTable, ThemeValue } from "@/preprocess/theme/types"
+import { normalize } from "@/preprocess/theme/normalize"
+import { buildContent, buildOpacity, customVariant, wrapTheme } from "@/preprocess/theme/serialize"
 import { text } from "@/text"
 
 interface ThemeGroup {
@@ -88,7 +88,7 @@ export function buildTheme(config: TuneConfig): string {
   for (const [key, scheme] of Object.entries(theme.schemes ?? {})) {
     const identifier = scheme.prefix ?? key
     if (identifiers.has(identifier))
-      throw new Error(text.generate.themeDuplicated(identifier))
+      throw new Error(text.preprocess.themeDuplicated(identifier))
 
     identifiers.add(identifier)
     variants.push(customVariant(identifier))
