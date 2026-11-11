@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { DIAGNOSTIC_LEVELS } from "@/const/diagnostics"
 import { STRICT_MODES } from "@/const/strict"
 import { COLOR_FAMILIES, COLOR_SHADES } from "@/const/tailwind"
 import { text } from "@/text"
@@ -119,6 +120,9 @@ export const strictSchema = z.union([
   strictFlagsSchema,
 ])
 
+/** diagnostic level, silent when omitted */
+export const diagnosticsSchema = z.enum(DIAGNOSTIC_LEVELS)
+
 /** tunewind config */
 export const configSchema = z.strictObject({
   /** color theme */
@@ -127,6 +131,8 @@ export const configSchema = z.strictObject({
   size: sizeSchema.optional(),
   /** strict mode */
   strict: strictSchema.optional(),
+  /** diagnostic level of the dropped nodes */
+  diagnostics: diagnosticsSchema.optional(),
 })
 
 export type TunePalette = z.output<typeof paletteSchema>
@@ -139,4 +145,5 @@ export type TuneBreakpoint = z.output<typeof breakpointSchema>
 export type TuneSize = z.output<typeof sizeSchema>
 export type TuneStrictFlags = z.output<typeof strictFlagsSchema>
 export type TuneStrict = z.output<typeof strictSchema>
+export type TuneDiagnostics = z.output<typeof diagnosticsSchema>
 export type TuneConfig = z.output<typeof configSchema>
