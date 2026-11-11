@@ -20,8 +20,11 @@ function collectRawVars(theme: TuneTheme): Set<string> {
     if (aliases.has(family))
       continue
 
-    for (const key of keys)
-      vars.add(`--color-${family}-${key}`)
+    for (const key of keys) {
+      vars.add(key === "default"
+        ? `--color-${family}`
+        : `--color-${family}-${key}`)
+    }
   }
 
   return vars
