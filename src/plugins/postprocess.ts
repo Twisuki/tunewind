@@ -1,15 +1,18 @@
-import type { Plugin, PluginCreator } from "postcss"
+import type { Plugin, PluginCreator, Root } from "postcss"
+import { loadConfig } from "@/config/loader"
 import { POSTPROCESS_PLUGIN_NAME } from "@/const/postcss"
+import { main } from "@/postprocess"
 
 export interface PostprocessOptions {
   cwd?: string
-  strict?: boolean
 }
 
 export const postprocess: PluginCreator<PostprocessOptions> = Object.assign(
-  (_options: PostprocessOptions = {}): Plugin => ({
+  (options: PostprocessOptions = {}): Plugin => ({
     postcssPlugin: POSTPROCESS_PLUGIN_NAME,
-    OnceExit() {},
+    async OnceExit(root: Root) {
+      main(root, await loadConfig(options.cwd))
+    },
   }),
   { postcss: true as const },
 )
