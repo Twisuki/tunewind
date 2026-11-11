@@ -5,6 +5,11 @@
   "packageManager": "pnpm@11.24.0",
   "description": "A highly configurable, strongly constrained, and extensible atomic CSS solution and design system",
   "author": "Twisuki",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "readme": "README.md",
   "homepage": "https://github.com/Twisuki/tunewind#readme",
   "repository": {
     "type": "git",
@@ -21,6 +26,7 @@
     "tailwind",
     "tailwindcss"
   ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": {
@@ -38,6 +44,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
   "files": [
+    "LICENSE",
     "README.md",
     "dist"
   ],

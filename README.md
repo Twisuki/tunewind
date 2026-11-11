@@ -5,3 +5,7 @@
 Bring design system standards to Tailwind !
 
 </div>
+
+## License
+
+[MIT](./LICENSE)
