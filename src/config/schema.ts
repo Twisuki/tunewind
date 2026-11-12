@@ -121,7 +121,15 @@ export const strictSchema = z.union([
 ])
 
 /** diagnostic level, silent when omitted */
-export const diagnosticsSchema = z.enum(DIAGNOSTIC_LEVELS)
+export const diagnosticsSchema = z.union([
+  z.enum(DIAGNOSTIC_LEVELS),
+  z.strictObject({
+    /** diagnostic level */
+    mode: z.enum(DIAGNOSTIC_LEVELS),
+    /** most lines reported, defaults to the built-in limit */
+    limit: z.number().int().positive().optional(),
+  }),
+])
 
 /** tunewind config */
 export const configSchema = z.strictObject({

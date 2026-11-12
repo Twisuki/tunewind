@@ -1,5 +1,6 @@
 import type { Root } from "postcss"
 import type { TuneConfig, TuneDiagnostics, TuneStrict } from "@/config/schema"
+import type { DiagnosticLevel } from "@/const/diagnostics"
 import type { ScanPlugin } from "@/postprocess/scan/types"
 import { DIAGNOSTIC_LIMIT } from "@/const/diagnostics"
 import { DiagnosticsError } from "@/postprocess/error"
@@ -17,6 +18,14 @@ interface StrictPolicy {
   family: boolean
   /** honor the bypass marker */
   bypass: boolean
+}
+
+/** resolved diagnostic settings */
+interface DiagnosticPolicy {
+  /** diagnostic level */
+  level: DiagnosticLevel
+  /** most lines reported */
+  limit: number
 }
 
 /** where the diagnostic lines of one postprocess go */
@@ -45,6 +54,17 @@ function normalizeStrict(strict: TuneStrict | undefined): StrictPolicy | undefin
   }
 }
 
+/** normalize the diagnostics forms into an explicit level and limit */
+function normalizeDiagnostics(diagnostics: TuneDiagnostics | undefined): DiagnosticPolicy {
+  if (diagnostics === undefined)
+    return { level: "off", limit: DIAGNOSTIC_LIMIT }
+
+  if (typeof diagnostics === "string")
+    return { level: diagnostics, limit: DIAGNOSTIC_LIMIT }
+
+  return { level: diagnostics.mode, limit: diagnostics.limit ?? DIAGNOSTIC_LIMIT }
+}
+
 /** build the enabled checks for a config */
 function buildPlugins(config: TuneConfig, policy: StrictPolicy | undefined): ScanPlugin[] {
   const plugins: ScanPlugin[] = []
@@ -59,17 +79,21 @@ function buildPlugins(config: TuneConfig, policy: StrictPolicy | undefined): Sca
   return plugins
 }
 
-/** report the dropped nodes according to the diagnostic level */
-function report(lines: readonly string[], level: TuneDiagnostics, sink: PostprocessSink): void {
-  if (level === "off" || lines.length === 0)
+/** report the dropped nodes according to the diagnostic settings */
+function report(lines: readonly string[], policy: DiagnosticPolicy, sink: PostprocessSink): void {
+  if (policy.level === "off" || lines.length === 0)
     return
 
   const unique = Array.from(new Set(lines))
-  const shown = unique.slice(0, DIAGNOSTIC_LIMIT)
+  const shown = unique.slice(0, policy.limit)
 
-  if (level === "warn") {
+  if (policy.level === "warn") {
     for (const line of shown)
       sink.warn(text.postprocess.warn(line))
+
+    if (unique.length > shown.length)
+      sink.warn(text.postprocess.warn(text.postprocess.more(unique.length - shown.length)))
+
     return
   }
 
@@ -80,5 +104,5 @@ function report(lines: readonly string[], level: TuneDiagnostics, sink: Postproc
 export function main(root: Root, config: TuneConfig, sink: PostprocessSink): void {
   const policy = normalizeStrict(config.strict)
   const lines = scan(root, buildPlugins(config, policy), { bypass: policy?.bypass ?? false })
-  report(lines, config.diagnostics ?? "off", sink)
+  report(lines, normalizeDiagnostics(config.diagnostics), sink)
 }
