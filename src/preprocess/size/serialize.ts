@@ -36,7 +36,7 @@ export function buildKeys(units: SizeUnit[]): string[] {
 
 /** build the width variables of the configured breakpoints */
 export function buildBreakpoints(breakpoints: readonly SizeBreakpoint[]): string[] {
-  return breakpoints.map(breakpoint => `  --breakpoint-${breakpoint.name}: ${breakpoint.width};`)
+  return breakpoints.map(breakpoint => `  --breakpoint-${breakpoint.prefix}: ${breakpoint.width};`)
 }
 
 /** keep the units whose length differs from the previous table */

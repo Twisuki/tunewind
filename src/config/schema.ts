@@ -80,8 +80,10 @@ export const unitSchema = z.union([
 export const breakpointSchema = z.union([
   cssLength,
   z.strictObject({
-    /** breakpoint width */
-    value: cssLength,
+    /** variant name, the key when omitted */
+    prefix: z.string().min(1).optional(),
+    /** breakpoint width, the built-in width when omitted */
+    value: cssLength.optional(),
     /** units redefined in this breakpoint */
     units: z.record(keySchema, unitSchema).optional(),
   }),

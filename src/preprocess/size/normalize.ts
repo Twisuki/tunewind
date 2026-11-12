@@ -1,5 +1,6 @@
 import type { TuneBreakpoint, TuneUnit } from "@/config/schema"
 import type { SizeBreakpoint, SizeUnit, TuneUnitOptions } from "@/preprocess/size/types"
+import { BREAKPOINTS } from "@/const/tailwind"
 import { text } from "@/text"
 
 /** read a unit definition as options, a plain length becomes `{ value }` */
@@ -32,23 +33,37 @@ function toPixels(length: string): number {
 
 /** parse the breakpoints and order them by width */
 export function parseBreakpoints(breakpoints: Record<string, TuneBreakpoint>): SizeBreakpoint[] {
-  const parsed = Object.entries(breakpoints).map(([name, breakpoint]) => ({
-    name,
-    width: typeof breakpoint === "string"
-      ? breakpoint
-      : breakpoint.value,
-    units: typeof breakpoint === "string"
-      ? {}
-      : breakpoint.units ?? {},
-  }))
+  const parsed = Object.entries(breakpoints).map(([name, breakpoint]) => {
+    const options = typeof breakpoint === "string"
+      ? undefined
+      : breakpoint
+    const builtin: string | undefined = BREAKPOINTS[name as keyof typeof BREAKPOINTS]
+    const width = options?.value ?? builtin
+
+    if (width === undefined)
+      throw new Error(text.preprocess.breakpointWidthMissing(name))
+
+    return {
+      name,
+      prefix: options?.prefix ?? name,
+      width,
+      units: options?.units ?? {},
+    }
+  })
 
   const ordered = parsed.sort((a, b) => toPixels(a.width) - toPixels(b.width))
+  const identifiers = new Map<string, string>()
 
-  for (let index = 1; index < ordered.length; index += 1) {
+  for (const [index, current] of ordered.entries()) {
     const previous = ordered[index - 1]
-    const current = ordered[index]
-    if (toPixels(previous.width) === toPixels(current.width))
+    if (previous !== undefined && toPixels(previous.width) === toPixels(current.width))
       throw new Error(text.preprocess.breakpointDuplicated(previous.name, current.name))
+
+    const first = identifiers.get(current.prefix)
+    if (first !== undefined)
+      throw new Error(text.preprocess.breakpointPrefixDuplicated(first, current.name))
+
+    identifiers.set(current.prefix, current.name)
   }
 
   return ordered

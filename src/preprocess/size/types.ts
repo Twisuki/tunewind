@@ -19,8 +19,10 @@ export interface SizeUnit {
 
 /** one parsed breakpoint, ordered by width with the others */
 export interface SizeBreakpoint {
-  /** breakpoint key */
+  /** breakpoint key in the config */
   name: string
+  /** variant name, `prefix` or the key */
+  prefix: string
   /** min width */
   width: string
   /** unit overrides of the breakpoint */

@@ -55,6 +55,15 @@ export const FLAT_COLORS = {
   black: "#000",
 } as const
 
+/** built-in breakpoint widths */
+export const BREAKPOINTS = {
+  "sm": "640px",
+  "md": "768px",
+  "lg": "1024px",
+  "xl": "1280px",
+  "2xl": "1536px",
+} as const
+
 /** tailwind default palette */
 export const PALETTE = {
   amber: {
