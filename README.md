@@ -74,6 +74,8 @@ export default defineConfig({
   },
   // enforcement and escape hatches
   strict: "bypass",
+  // visibility of the dropped nodes
+  diagnostics: "warn",
 })
 ```
 
