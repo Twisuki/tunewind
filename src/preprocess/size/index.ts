@@ -1,6 +1,6 @@
 import type { TuneConfig } from "@/config/schema"
-import { parseBreakpoints, resolveUnits } from "@/preprocess/size/normalize"
-import { buildKeys, buildUnits, wrapMedia, wrapTheme } from "@/preprocess/size/serialize"
+import { mergeUnits, parseBreakpoints, resolveUnits } from "@/preprocess/size/normalize"
+import { buildBreakpoints, buildKeys, buildUnits, diffUnits, wrapBreakpoint, wrapTheme } from "@/preprocess/size/serialize"
 import { text } from "@/text"
 
 /** build the css of the size system and its breakpoints */
@@ -9,41 +9,43 @@ export function buildSize(config: TuneConfig): string {
   if (size === undefined)
     return ""
 
-  // resolve the base scope
-  const options = [size.min, size.max, size.step] as const
-  const base = resolveUnits(size.units, ...options)
-  const lengths = new Map(base.map(unit => [unit.name, unit.value]))
-  const blocks: string[][] = [
-    wrapTheme([
-      ...buildUnits(base),
-      ...buildKeys(base),
-    ]),
-  ]
-
-  // order breakpoints by width
+  const defaults = [size.min, size.max, size.step] as const
+  const base = resolveUnits(size.units, ...defaults)
   const breakpoints = parseBreakpoints(size.breakpoints ?? {})
 
-  // emit the variables changed by each breakpoint
+  // each scope adds its own numbers, so keys stay global
+  const keys = new Set(buildKeys(base))
+  const blocks: string[][] = []
   let units = size.units
+  let previous = base
+
+  // one config patch and its changed units per breakpoint
   for (const breakpoint of breakpoints) {
-    for (const unit of Object.keys(breakpoint.units)) {
-      if (!(unit in size.units))
-        throw new Error(text.preprocess.unknownUnit(breakpoint.name, unit))
+    for (const name of Object.keys(breakpoint.units)) {
+      if (!(name in size.units))
+        throw new Error(text.preprocess.unknownUnit(breakpoint.name, name))
     }
 
-    units = {
-      ...units,
-      ...breakpoint.units,
-    }
+    units = mergeUnits(units, breakpoint.units)
+    const scoped = resolveUnits(units, ...defaults)
+    for (const key of buildKeys(scoped))
+      keys.add(key)
 
-    const scoped = resolveUnits(units, ...options)
-    const changed = scoped.filter(unit => lengths.get(unit.name) !== unit.value)
-    for (const unit of scoped)
-      lengths.set(unit.name, unit.value)
-
+    // keep only the units that changed
+    const changed = diffUnits(previous, scoped)
     if (changed.length > 0)
-      blocks.push(wrapMedia(buildUnits(changed), breakpoint.width))
+      blocks.push(wrapBreakpoint(buildUnits(changed), breakpoint.width))
+
+    previous = scoped
   }
 
-  return blocks.flat().join("\n")
+  // the theme block holds every key, so it comes last
+  return [
+    ...wrapTheme([
+      ...buildBreakpoints(breakpoints),
+      ...buildUnits(base),
+      ...keys,
+    ]),
+    ...blocks.flat(),
+  ].join("\n")
 }

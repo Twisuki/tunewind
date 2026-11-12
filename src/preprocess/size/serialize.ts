@@ -1,4 +1,4 @@
-import type { SizeUnit } from "@/preprocess/size/types"
+import type { SizeBreakpoint, SizeUnit } from "@/preprocess/size/types"
 
 function unitName(unit: SizeUnit): string {
   return unit.name === "default"
@@ -34,6 +34,16 @@ export function buildKeys(units: SizeUnit[]): string[] {
   return content
 }
 
+/** build the width variables of the configured breakpoints */
+export function buildBreakpoints(breakpoints: readonly SizeBreakpoint[]): string[] {
+  return breakpoints.map(breakpoint => `  --breakpoint-${breakpoint.name}: ${breakpoint.width};`)
+}
+
+/** keep the units whose length differs from the previous table */
+export function diffUnits(previous: SizeUnit[], next: SizeUnit[]): SizeUnit[] {
+  return next.filter(unit => previous.find(item => item.name === unit.name)?.value !== unit.value)
+}
+
 /** wrap the content into the theme block that resets the tailwind spacing */
 export function wrapTheme(content: string[]): string[] {
   return [
@@ -45,7 +55,7 @@ export function wrapTheme(content: string[]): string[] {
 }
 
 /** wrap the content into the media query of a breakpoint */
-export function wrapMedia(content: string[], width: string): string[] {
+export function wrapBreakpoint(content: string[], width: string): string[] {
   return [
     `@media (min-width: ${width}) {`,
     "  :root {",

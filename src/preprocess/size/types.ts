@@ -1,5 +1,8 @@
 import type { TuneUnit } from "@/config/schema"
 
+/** object form of a unit definition */
+export type TuneUnitOptions = Extract<TuneUnit, object>
+
 /** one resolved size unit, ready to become css */
 export interface SizeUnit {
   /** unit name, `default` is the base unit */
