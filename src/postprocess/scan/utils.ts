@@ -103,7 +103,7 @@ export function toSelectorItem(part: string): SelectorItem {
   }
 }
 
-/** collect the `var()` references of a value */
+/** collect the `var()` references of a value, escapes kept as written */
 export function variablesOf(value: string): string[] {
-  return collect(value, /var\(\s*(--[\w-]+)/g)
+  return collect(value, /var\(\s*(--(?:[\w-]|\\[^\n])+)/g)
 }
