@@ -11,7 +11,11 @@ export const postprocess: PluginCreator<PostprocessOptions> = Object.assign(
   (options: PostprocessOptions = {}): Plugin => ({
     postcssPlugin: POSTPROCESS_PLUGIN_NAME,
     async OnceExit(root: Root, { result }: Helpers) {
-      main(root, await loadConfig(options.cwd), {
+      const { config, dependencies } = await loadConfig(options.cwd)
+      for (const file of dependencies)
+        result.messages.push({ type: "dependency", plugin: POSTPROCESS_PLUGIN_NAME, file })
+
+      main(root, config, {
         warn: line => result.warn(line, { plugin: POSTPROCESS_PLUGIN_NAME }),
       })
     },
