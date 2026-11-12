@@ -37,8 +37,10 @@ export function createFamilyPlugin(theme: TuneTheme): ScanPlugin {
   const vars = collectRawVars(theme)
 
   return {
-    filter: atRules => hasLayer(atRules, "utilities"),
     declaration: (context) => {
+      if (!hasLayer(context.atRules, "utilities"))
+        return
+
       if (context.bypassed())
         return
 

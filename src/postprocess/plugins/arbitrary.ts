@@ -5,8 +5,10 @@ import { text } from "@/text"
 /** drop every selector holding an arbitrary value */
 export function createArbitraryPlugin(): ScanPlugin {
   return {
-    filter: atRules => hasLayer(atRules, "utilities"),
     rule: (context) => {
+      if (!hasLayer(context.atRules, "utilities"))
+        return
+
       if (context.bypassed())
         return
 

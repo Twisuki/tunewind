@@ -13,11 +13,6 @@ interface Scope {
   blocked: boolean
 }
 
-/** keep the plugins whose filter accepts the current at-rules */
-function scoped(plugins: readonly ScanPlugin[], atRules: readonly AtRule[]): ScanPlugin[] {
-  return plugins.filter(plugin => plugin.filter?.(atRules) ?? true)
-}
-
 /** extend the at-rule stack with one block */
 function enterAtRule(atRule: AtRule, atRules: readonly AtRule[]): readonly AtRule[] {
   return atRules.concat(atRule)
@@ -33,7 +28,7 @@ function visit(
 ): number {
   const active = scope.blocked
     ? []
-    : scoped(plugins, scope.atRules)
+    : plugins
   let count = 0
 
   // every child is counted, a skipped subtree trips the verify check

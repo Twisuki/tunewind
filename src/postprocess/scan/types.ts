@@ -48,8 +48,6 @@ export interface DeclarationContext {
 
 /** one scanner plugin */
 export interface ScanPlugin {
-  /** whether the plugin takes part in the given scope */
-  filter?: (atRules: readonly AtRule[]) => boolean
   /** check a rule and its selector list */
   rule?: (context: RuleContext) => void
   /** check a declaration inside a scanned rule */

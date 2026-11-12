@@ -116,8 +116,10 @@ function hasLiteralOpacity(declaration: Declaration): boolean {
 /** drop every declaration whose opacity does not come from a theme key */
 export function createOpacityPlugin(): ScanPlugin {
   return {
-    filter: atRules => hasLayer(atRules, "utilities"),
     declaration: (context) => {
+      if (!hasLayer(context.atRules, "utilities"))
+        return
+
       if (hasLiteralOpacity(context.declaration))
         context.drop(text.postprocess.reason.opacity)
     },
