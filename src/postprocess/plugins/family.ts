@@ -1,6 +1,7 @@
 import type { TuneTheme } from "@/config/schema"
 import type { ScanPlugin } from "@/postprocess/scan/types"
 import { COLOR_FAMILIES } from "@/const/tailwind"
+import { hasLayer } from "@/postprocess/plugins/utils"
 import { text } from "@/text"
 
 /** collect the color variables that only exist under their raw family name */
@@ -36,7 +37,7 @@ export function createFamilyPlugin(theme: TuneTheme): ScanPlugin {
   const vars = collectRawVars(theme)
 
   return {
-    layers: ["utilities"],
+    filter: atRules => hasLayer(atRules, "utilities"),
     declaration: (context) => {
       if (context.bypassed())
         return

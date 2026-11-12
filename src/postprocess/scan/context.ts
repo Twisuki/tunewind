@@ -1,4 +1,4 @@
-import type { Declaration, Rule } from "postcss"
+import type { AtRule, Declaration, Rule } from "postcss"
 import type { DeclarationContext, Recorder, RuleContext, SelectorItem } from "@/postprocess/scan/types"
 import { BYPASS_MARKER } from "@/const/postcss"
 import { splitTopLevel, toSelectorItem, variablesOf } from "@/postprocess/scan/utils"
@@ -29,13 +29,13 @@ function isBypassed(rule: Rule, enabled: boolean): boolean {
 /** build the context of a scanned rule */
 export function createRuleContext(
   rule: Rule,
-  layers: readonly string[],
+  atRules: readonly AtRule[],
   recorder: Recorder,
   bypass: boolean,
 ): RuleContext {
   return {
     rule,
-    layers,
+    atRules,
     selectors: () => selectorsOf(rule),
     bypassed: () => isBypassed(rule, bypass),
     drop: (reason) => {
@@ -57,14 +57,14 @@ export function createRuleContext(
 export function createDeclarationContext(
   declaration: Declaration,
   rule: Rule,
-  layers: readonly string[],
+  atRules: readonly AtRule[],
   recorder: Recorder,
   bypass: boolean,
 ): DeclarationContext {
   return {
     declaration,
     rule,
-    layers,
+    atRules,
     variables: () => variablesOf(declaration.value),
     bypassed: () => isBypassed(rule, bypass),
     drop: (reason) => {

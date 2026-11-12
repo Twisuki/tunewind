@@ -1,5 +1,6 @@
 import type { Declaration } from "postcss"
 import type { ScanPlugin } from "@/postprocess/scan/types"
+import { hasLayer } from "@/postprocess/plugins/utils"
 import { text } from "@/text"
 
 /** bodies of every call of a function, in order of appearance */
@@ -115,7 +116,7 @@ function hasLiteralOpacity(declaration: Declaration): boolean {
 /** drop every declaration whose opacity does not come from a theme key */
 export function createOpacityPlugin(): ScanPlugin {
   return {
-    layers: ["utilities"],
+    filter: atRules => hasLayer(atRules, "utilities"),
     declaration: (context) => {
       if (hasLiteralOpacity(context.declaration))
         context.drop(text.postprocess.reason.opacity)

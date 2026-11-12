@@ -1,10 +1,11 @@
 import type { ScanPlugin } from "@/postprocess/scan/types"
+import { hasLayer } from "@/postprocess/plugins/utils"
 import { text } from "@/text"
 
 /** drop every selector holding an arbitrary value */
 export function createArbitraryPlugin(): ScanPlugin {
   return {
-    layers: ["utilities"],
+    filter: atRules => hasLayer(atRules, "utilities"),
     rule: (context) => {
       if (context.bypassed())
         return

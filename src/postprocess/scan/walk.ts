@@ -1,32 +1,26 @@
 import type { AtRule, Container, Root, Rule } from "postcss"
 import type { Recorder, ScanOptions, ScanPlugin } from "@/postprocess/scan/types"
-import { BLOCKED_AT_RULES, LAYER_AT_RULE, NODE_TYPES } from "@/const/postcss"
+import { BLOCKED_AT_RULES, NODE_TYPES } from "@/const/postcss"
 import { createDeclarationContext, createRuleContext } from "@/postprocess/scan/context"
 
 /** traversal state carried down the tree */
 interface Scope {
-  /** enclosing `@layer` names, outer to inner */
-  layers: readonly string[]
+  /** enclosing at-rules, outer to inner */
+  atRules: readonly AtRule[]
   /** nearest ancestor rule owning the declarations below */
   owner?: Rule
   /** whether the subtree ignores every check */
   blocked: boolean
 }
 
-/** extend the layer stack with the names of a `@layer` block */
-function enterLayer(atRule: AtRule, layers: readonly string[]): readonly string[] {
-  if (atRule.name !== LAYER_AT_RULE)
-    return layers
-
-  const names = atRule.params.split(",").map(name => name.trim()).filter(Boolean)
-  return layers.concat(names)
+/** keep the plugins whose filter accepts the current at-rules */
+function scoped(plugins: readonly ScanPlugin[], atRules: readonly AtRule[]): ScanPlugin[] {
+  return plugins.filter(plugin => plugin.filter?.(atRules) ?? true)
 }
 
-/** keep the plugins whose scope covers the current layer stack */
-function scoped(plugins: readonly ScanPlugin[], layers: readonly string[]): ScanPlugin[] {
-  return plugins.filter(plugin =>
-    plugin.layers === undefined || plugin.layers.some(name => layers.includes(name)),
-  )
+/** extend the at-rule stack with one block */
+function enterAtRule(atRule: AtRule, atRules: readonly AtRule[]): readonly AtRule[] {
+  return atRules.concat(atRule)
 }
 
 /** dispatch the plugins over the subtree of a container, returning the node count */
@@ -39,7 +33,7 @@ function visit(
 ): number {
   const active = scope.blocked
     ? []
-    : scoped(plugins, scope.layers)
+    : scoped(plugins, scope.atRules)
   let count = 0
 
   // every child is counted, a skipped subtree trips the verify check
@@ -48,14 +42,14 @@ function visit(
 
     // a rule owns the declarations below it
     if (child.type === NODE_TYPES.rule) {
-      const context = createRuleContext(child, scope.layers, recorder, bypass)
+      const context = createRuleContext(child, scope.atRules, recorder, bypass)
       for (const plugin of active)
         plugin.rule?.(context)
 
       count += visit(
         child,
         {
-          layers: scope.layers,
+          atRules: scope.atRules,
           owner: child,
           blocked: scope.blocked,
         },
@@ -70,7 +64,7 @@ function visit(
         count += visit(
           child,
           {
-            layers: enterLayer(child, scope.layers),
+            atRules: enterAtRule(child, scope.atRules),
             owner: scope.owner,
             blocked: scope.blocked || BLOCKED_AT_RULES.includes(child.name),
           },
@@ -84,7 +78,7 @@ function visit(
     else if (child.type === NODE_TYPES.declaration) {
       const owner = scope.owner
       if (owner !== undefined && !recorder.rules.has(owner)) {
-        const context = createDeclarationContext(child, owner, scope.layers, recorder, bypass)
+        const context = createDeclarationContext(child, owner, scope.atRules, recorder, bypass)
         for (const plugin of active)
           plugin.declaration?.(context)
       }
@@ -101,5 +95,5 @@ export function walk(
   recorder: Recorder,
   options: ScanOptions,
 ): number {
-  return visit(root, { layers: [], blocked: false }, plugins, recorder, options.bypass ?? false)
+  return visit(root, { atRules: [], blocked: false }, plugins, recorder, options.bypass ?? false)
 }

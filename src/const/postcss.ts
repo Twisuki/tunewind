@@ -19,6 +19,9 @@ export const NODE_TYPES = {
 /** at-rule opening a cascade layer */
 export const LAYER_AT_RULE = "layer"
 
+/** at-rule scoping its content to a media query */
+export const MEDIA_AT_RULE = "media"
+
 /** class segment exempting a rule from the checks */
 export const BYPASS_MARKER = "raw"
 

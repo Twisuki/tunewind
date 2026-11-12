@@ -1,4 +1,4 @@
-import type { Declaration, Rule } from "postcss"
+import type { AtRule, Declaration, Rule } from "postcss"
 
 /** one selector of a selector list */
 export interface SelectorItem {
@@ -14,8 +14,8 @@ export interface SelectorItem {
 export interface RuleContext {
   /** scanned rule */
   readonly rule: Rule
-  /** enclosing `@layer` names, outer to inner */
-  readonly layers: readonly string[]
+  /** enclosing at-rules, outer to inner */
+  readonly atRules: readonly AtRule[]
 
   /** split the selector list of the scanned rule */
   selectors: () => readonly SelectorItem[]
@@ -34,8 +34,8 @@ export interface DeclarationContext {
   readonly declaration: Declaration
   /** rule owning the scanned declaration */
   readonly rule: Rule
-  /** enclosing `@layer` names, outer to inner */
-  readonly layers: readonly string[]
+  /** enclosing at-rules, outer to inner */
+  readonly atRules: readonly AtRule[]
 
   /** collect the `var()` references of the scanned declaration value */
   variables: () => string[]
@@ -48,8 +48,8 @@ export interface DeclarationContext {
 
 /** one scanner plugin */
 export interface ScanPlugin {
-  /** at-rules to scan, every node when omitted */
-  layers?: readonly string[]
+  /** whether the plugin takes part in the given scope */
+  filter?: (atRules: readonly AtRule[]) => boolean
   /** check a rule and its selector list */
   rule?: (context: RuleContext) => void
   /** check a declaration inside a scanned rule */
