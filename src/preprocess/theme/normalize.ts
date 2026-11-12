@@ -1,8 +1,35 @@
-import type { TunePalette, TuneShade } from "@/config/schema"
+import type { TuneOpacity, TunePalette, TuneShade } from "@/config/schema"
 import type { ColorShade } from "@/const/tailwind"
-import type { ThemePalette, ThemeTable, ThemeValue } from "@/preprocess/theme/types"
+import type { ThemeGroup, ThemePalette, ThemeTable, ThemeValue } from "@/preprocess/theme/types"
 import { COLOR_FAMILIES, COLOR_SHADES, PALETTE } from "@/const/tailwind"
 import { text } from "@/text"
+
+/** fold a theme config into a group, filling the absent dimensions */
+export function groupOf(theme: { palette?: TunePalette, shade?: TuneShade, opacity?: TuneOpacity }): ThemeGroup {
+  return {
+    palette: theme.palette ?? {},
+    shade: theme.shade ?? {},
+    opacity: theme.opacity ?? {},
+  }
+}
+
+/** merge a scheme group over the default group, name by name */
+export function mergeGroup(base: ThemeGroup, scheme: ThemeGroup): ThemeGroup {
+  return {
+    palette: {
+      ...base.palette,
+      ...scheme.palette,
+    },
+    shade: {
+      ...base.shade,
+      ...scheme.shade,
+    },
+    opacity: {
+      ...base.opacity,
+      ...scheme.opacity,
+    },
+  }
+}
 
 /** build the palette of every usable color name */
 function buildPalette(palette: TunePalette): ThemePalette {

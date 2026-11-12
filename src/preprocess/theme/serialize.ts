@@ -1,5 +1,5 @@
 import type { TuneOpacity } from "@/config/schema"
-import type { ThemeTable } from "@/preprocess/theme/types"
+import type { ThemeTable, ThemeValue } from "@/preprocess/theme/types"
 import { FLAT_COLORS } from "@/const/tailwind"
 
 /** theme namespace reset by a block */
@@ -29,6 +29,36 @@ export function buildContent(table: ThemeTable): string[] {
   }
 
   return content
+}
+
+/** keep the opacity of a scheme that differ from the default theme */
+export function diffOpacity(base: TuneOpacity, next: TuneOpacity): TuneOpacity {
+  const opacity: TuneOpacity = {}
+
+  for (const [key, value] of Object.entries(next)) {
+    if (base[key] !== value)
+      opacity[key] = value
+  }
+
+  return opacity
+}
+
+/** keep the colors of a scheme that differ from the default theme */
+export function diffTable(base: ThemeTable, next: ThemeTable): ThemeTable {
+  const table: ThemeTable = new Map()
+
+  for (const [name, values] of next) {
+    const changed = new Map<string, ThemeValue>()
+    for (const [key, value] of values) {
+      if (base.get(name)?.get(key) !== value)
+        changed.set(key, value)
+    }
+
+    if (changed.size > 0)
+      table.set(name, changed)
+  }
+
+  return table
 }
 
 /** wrap theme content into a block, resetting the namespace for the default theme */
