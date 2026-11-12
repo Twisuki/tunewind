@@ -1,6 +1,7 @@
 import type { TuneBreakpoint, TuneUnit } from "@/config/schema"
 import type { SizeBreakpoint, SizeUnit, TuneUnitOptions } from "@/preprocess/size/types"
 import { BREAKPOINTS } from "@/const/tailwind"
+import { output } from "@/plugins/output"
 import { text } from "@/text"
 
 /** read a unit definition as options, a plain length becomes `{ value }` */
@@ -41,7 +42,7 @@ export function parseBreakpoints(breakpoints: Record<string, TuneBreakpoint>): S
     const width = options?.value ?? builtin
 
     if (width === undefined)
-      throw new Error(text.preprocess.breakpointWidthMissing(name))
+      output.error(text.preprocess.breakpointWidthMissing(name))
 
     return {
       name,
@@ -57,11 +58,11 @@ export function parseBreakpoints(breakpoints: Record<string, TuneBreakpoint>): S
   for (const [index, current] of ordered.entries()) {
     const previous = ordered[index - 1]
     if (previous !== undefined && toPixels(previous.width) === toPixels(current.width))
-      throw new Error(text.preprocess.breakpointDuplicated(previous.name, current.name))
+      output.error(text.preprocess.breakpointDuplicated(previous.name, current.name))
 
     const first = identifiers.get(current.prefix)
     if (first !== undefined)
-      throw new Error(text.preprocess.breakpointPrefixDuplicated(first, current.name))
+      output.error(text.preprocess.breakpointPrefixDuplicated(first, current.name))
 
     identifiers.set(current.prefix, current.name)
   }
@@ -70,18 +71,23 @@ export function parseBreakpoints(breakpoints: Record<string, TuneBreakpoint>): S
 }
 
 /** resolve one scope of units into size units */
-export function resolveUnits(units: Record<string, TuneUnit>, min?: number, max?: number, step?: number): SizeUnit[] {
+export function resolveUnits(
+  units: Record<string, TuneUnit>,
+  min?: number,
+  max?: number,
+  step?: number,
+): SizeUnit[] {
   return Object.entries(units).map(([name, unit]) => {
     const options = toOptions(unit)
     const bound = options.max ?? max
 
     if (bound === undefined)
-      throw new Error(text.preprocess.maxMissing(name))
+      output.error(text.preprocess.maxMissing(name))
 
     const lower = options.min ?? min ?? 0
 
     if (lower > bound)
-      throw new Error(text.preprocess.rangeReversed(name))
+      output.error(text.preprocess.rangeReversed(name))
 
     return {
       name,

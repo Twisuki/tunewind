@@ -3,7 +3,7 @@ import type { TuneConfig, TuneDiagnostics, TuneStrict } from "@/config/schema"
 import type { DiagnosticLevel } from "@/const/diagnostics"
 import type { ScanPlugin } from "@/postprocess/scan/types"
 import { DIAGNOSTIC_LIMIT } from "@/const/diagnostics"
-import { DiagnosticsError } from "@/postprocess/error"
+import { output } from "@/plugins/output"
 import { createArbitraryPlugin } from "@/postprocess/plugins/arbitrary"
 import { createFamilyPlugin } from "@/postprocess/plugins/family"
 import { createOpacityPlugin } from "@/postprocess/plugins/opacity"
@@ -27,12 +27,6 @@ interface DiagnosticPolicy {
   level: DiagnosticLevel
   /** most lines reported */
   limit: number
-}
-
-/** where the diagnostic lines of one postprocess go */
-export interface PostprocessSink {
-  /** emit one warning line */
-  warn: (line: string) => void
 }
 
 /** normalize the strict forms into explicit allowances */
@@ -84,8 +78,18 @@ function buildPlugins(config: TuneConfig, policy: StrictPolicy | undefined): Sca
   return plugins
 }
 
+/** build the message listing the dropped nodes */
+function listing(lines: readonly string[], total: number): string {
+  const body = lines.map(line => `  ${line}`).join("\n")
+  const tail = total > lines.length
+    ? `\n  ${text.postprocess.more(total - lines.length)}`
+    : ""
+
+  return `${text.postprocess.summary(total)}\n${body}${tail}`
+}
+
 /** report the dropped nodes according to the diagnostic settings */
-function report(lines: readonly string[], policy: DiagnosticPolicy, sink: PostprocessSink): void {
+function report(lines: readonly string[], policy: DiagnosticPolicy): void {
   if (policy.level === "off" || lines.length === 0)
     return
 
@@ -94,20 +98,20 @@ function report(lines: readonly string[], policy: DiagnosticPolicy, sink: Postpr
 
   if (policy.level === "warn") {
     for (const line of shown)
-      sink.warn(text.postprocess.warn(line))
+      output.warn(text.postprocess.warn(line))
 
     if (unique.length > shown.length)
-      sink.warn(text.postprocess.warn(text.postprocess.more(unique.length - shown.length)))
+      output.warn(text.postprocess.warn(text.postprocess.more(unique.length - shown.length)))
 
     return
   }
 
-  throw new DiagnosticsError(shown, unique.length)
+  output.error(listing(shown, unique.length))
 }
 
 /** entry of the postprocess stage */
-export function main(root: Root, config: TuneConfig, sink: PostprocessSink): void {
+export function main(root: Root, config: TuneConfig): void {
   const policy = normalizeStrict(config.strict)
   const lines = scan(root, buildPlugins(config, policy), { bypass: policy?.bypass ?? false })
-  report(lines, normalizeDiagnostics(config.diagnostics), sink)
+  report(lines, normalizeDiagnostics(config.diagnostics))
 }

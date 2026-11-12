@@ -1,4 +1,5 @@
 import type { TuneConfig } from "@/config/schema"
+import { output } from "@/plugins/output"
 import { groupOf, mergeGroup, normalize } from "@/preprocess/theme/normalize"
 import { buildContent, buildOpacity, customVariant, diffOpacity, diffTable, wrapTheme } from "@/preprocess/theme/serialize"
 import { text } from "@/text"
@@ -25,7 +26,7 @@ export function buildTheme(config: TuneConfig): string {
   for (const [key, scheme] of Object.entries(theme.schemes ?? {})) {
     const identifier = scheme.prefix ?? key
     if (identifiers.has(identifier))
-      throw new Error(text.preprocess.themeDuplicated(identifier))
+      output.error(text.preprocess.themeDuplicated(identifier))
 
     identifiers.add(identifier)
     variants.push(customVariant(identifier))

@@ -2,6 +2,7 @@ import type { TuneOpacity, TunePalette, TuneShade } from "@/config/schema"
 import type { ColorShade } from "@/const/tailwind"
 import type { ThemeGroup, ThemePalette, ThemeTable, ThemeValue } from "@/preprocess/theme/types"
 import { COLOR_FAMILIES, COLOR_SHADES, PALETTE } from "@/const/tailwind"
+import { output } from "@/plugins/output"
 import { text } from "@/text"
 
 /** fold a theme config into a group, filling the absent dimensions */
@@ -74,7 +75,7 @@ function buildTable(themePalette: ThemePalette, shade: TuneShade): ThemeTable {
     for (const [key, colorShade] of Object.entries(shade)) {
       const value = scale.get(colorShade)
       if (value === undefined)
-        throw new Error(text.preprocess.shadeMissing(name, colorShade))
+        output.error(text.preprocess.shadeMissing(name, colorShade))
 
       values.set(key, value)
     }

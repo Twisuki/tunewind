@@ -7,6 +7,7 @@ import { createJiti } from "jiti"
 import { z } from "zod"
 import { configSchema } from "@/config/schema"
 import { CONFIG_FILES } from "@/const/config"
+import { output } from "@/plugins/output"
 import { text } from "@/text"
 
 /** extensions tried when resolving an imported config file */
@@ -95,13 +96,13 @@ export function findConfigDependencies(file: string): string[] {
 export async function loadConfig(cwd: string = process.cwd()): Promise<LoadedConfig> {
   const file = findConfigFile(cwd)
   if (!file)
-    throw new Error(text.config.fileNotFound(cwd, CONFIG_FILES))
+    output.error(text.config.fileNotFound(cwd, CONFIG_FILES))
 
   const source = await readFile(file, "utf8")
   const mod = jiti.evalModule(source, { filename: file, id: file }) as { default?: unknown, config?: unknown }
   const input = mod.default ?? mod.config
   if (input === undefined)
-    throw new Error(text.config.defaultExportRequired(file))
+    output.error(text.config.defaultExportRequired(file))
 
   try {
     const config = configSchema.parse(input)
@@ -110,7 +111,7 @@ export async function loadConfig(cwd: string = process.cwd()): Promise<LoadedCon
   }
   catch (error) {
     if (error instanceof z.ZodError)
-      throw new Error(text.config.invalid(file, z.prettifyError(error)))
+      output.error(text.config.invalid(file, z.prettifyError(error)))
     throw error
   }
 }
