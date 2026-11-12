@@ -15,16 +15,17 @@ function verify(root: Root, visited: number): void {
     throw new Error(text.postprocess.walkIncomplete(visited, total))
 }
 
-/** scan the built css once with the given plugins */
+/** scan the built css once with the given plugins, returning the diagnostic lines */
 export function scan(
   root: Root,
   plugins: readonly ScanPlugin[],
   options: ScanOptions = {},
-): void {
+): readonly string[] {
   const recorder: Recorder = {
     rules: new Set(),
     selectors: new Map(),
     declarations: new Set(),
+    reports: [],
   }
 
   const visited = walk(root, plugins, recorder, options)
@@ -32,4 +33,5 @@ export function scan(
     verify(root, visited)
 
   commit(recorder)
+  return recorder.reports
 }

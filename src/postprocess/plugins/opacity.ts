@@ -1,5 +1,6 @@
 import type { Declaration } from "postcss"
 import type { ScanPlugin } from "@/postprocess/scan/types"
+import { text } from "@/text"
 
 /** bodies of every call of a function, in order of appearance */
 function callBodies(value: string, name: string): string[] {
@@ -120,7 +121,7 @@ export function createOpacityPlugin(): ScanPlugin {
         return
 
       if (hasLiteralOpacity(context.declaration))
-        context.drop()
+        context.drop(text.postprocess.reason.opacity)
     },
   }
 }

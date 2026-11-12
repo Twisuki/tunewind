@@ -1,6 +1,7 @@
 import type { TuneTheme } from "@/config/schema"
 import type { ScanPlugin } from "@/postprocess/scan/types"
 import { COLOR_FAMILIES } from "@/const/tailwind"
+import { text } from "@/text"
 
 /** collect the color variables that only exist under their raw family name */
 function collectRawVars(theme: TuneTheme): Set<string> {
@@ -41,7 +42,7 @@ export function createFamilyPlugin(theme: TuneTheme): ScanPlugin {
         return
 
       if (context.variables().some(name => vars.has(name)))
-        context.drop()
+        context.drop(text.postprocess.reason.family)
     },
   }
 }

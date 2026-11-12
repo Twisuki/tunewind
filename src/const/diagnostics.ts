@@ -7,3 +7,6 @@ export const DIAGNOSTIC_LEVELS = [
 
 /** diagnostic level */
 export type DiagnosticLevel = (typeof DIAGNOSTIC_LEVELS)[number]
+
+/** most lines reported by one build */
+export const DIAGNOSTIC_LIMIT = 100

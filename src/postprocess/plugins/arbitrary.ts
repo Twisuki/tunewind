@@ -1,4 +1,5 @@
 import type { ScanPlugin } from "@/postprocess/scan/types"
+import { text } from "@/text"
 
 /** drop every selector holding an arbitrary value */
 export function createArbitraryPlugin(): ScanPlugin {
@@ -10,7 +11,7 @@ export function createArbitraryPlugin(): ScanPlugin {
 
       const hit = context.selectors().filter(item => item.raw.includes("\\["))
       if (hit.length > 0)
-        context.dropSelectors(hit)
+        context.dropSelectors(hit, text.postprocess.reason.arbitrary)
     },
   }
 }

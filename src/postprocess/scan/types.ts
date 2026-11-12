@@ -23,9 +23,9 @@ export interface RuleContext {
   bypassed: () => boolean
 
   /** drop the scanned rule */
-  drop: () => void
+  drop: (reason: string) => void
   /** drop the listed selectors, the whole rule when nothing is left */
-  dropSelectors: (selectors: readonly SelectorItem[]) => void
+  dropSelectors: (selectors: readonly SelectorItem[], reason: string) => void
 }
 
 /** context of a declaration hook */
@@ -43,7 +43,7 @@ export interface DeclarationContext {
   bypassed: () => boolean
 
   /** drop the scanned declaration */
-  drop: () => void
+  drop: (reason: string) => void
 }
 
 /** one scanner plugin */
@@ -72,4 +72,6 @@ export interface Recorder {
   selectors: Map<Rule, Set<SelectorItem>>
   /** declarations dropped in place */
   declarations: Set<Declaration>
+  /** diagnostic lines of the dropped nodes */
+  reports: string[]
 }

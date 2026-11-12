@@ -2,6 +2,7 @@ import type { Declaration, Rule } from "postcss"
 import type { DeclarationContext, Recorder, RuleContext, SelectorItem } from "@/postprocess/scan/types"
 import { BYPASS_MARKER } from "@/const/postcss"
 import { splitTopLevel, toSelectorItem, variablesOf } from "@/postprocess/scan/utils"
+import { text } from "@/text"
 
 /** selector lists already split, keyed by rule */
 const SELECTORS = new WeakMap<Rule, readonly SelectorItem[]>()
@@ -37,13 +38,16 @@ export function createRuleContext(
     layers,
     selectors: () => selectorsOf(rule),
     bypassed: () => isBypassed(rule, bypass),
-    drop: () => {
+    drop: (reason) => {
       recorder.rules.add(rule)
+      recorder.reports.push(text.postprocess.dropped(reason, rule.selector))
     },
-    dropSelectors: (items) => {
+    dropSelectors: (items, reason) => {
       const dropped = recorder.selectors.get(rule) ?? new Set<SelectorItem>()
-      for (const item of items)
+      for (const item of items) {
         dropped.add(item)
+        recorder.reports.push(text.postprocess.dropped(reason, item.raw))
+      }
       recorder.selectors.set(rule, dropped)
     },
   }
@@ -63,8 +67,11 @@ export function createDeclarationContext(
     layers,
     variables: () => variablesOf(declaration.value),
     bypassed: () => isBypassed(rule, bypass),
-    drop: () => {
+    drop: (reason) => {
       recorder.declarations.add(declaration)
+      recorder.reports.push(
+        text.postprocess.dropped(reason, `${declaration.prop}: ${declaration.value}`, rule.selector),
+      )
     },
   }
 }
