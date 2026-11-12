@@ -117,9 +117,6 @@ export function createOpacityPlugin(): ScanPlugin {
   return {
     layers: ["utilities"],
     declaration: (context) => {
-      if (context.bypassed())
-        return
-
       if (hasLiteralOpacity(context.declaration))
         context.drop(text.postprocess.reason.opacity)
     },
