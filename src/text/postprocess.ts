@@ -5,6 +5,7 @@ export const postprocess = {
     arbitrary: "arbitrary value is not allowed",
     family: "raw color family is not allowed",
     opacity: "opacity outside the theme keys",
+    size: "size outside the breakpoint unit range",
   },
   /** one dropped node */
   dropped: (reason: string, target: string, owner?: string) => owner

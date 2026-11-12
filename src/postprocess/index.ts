@@ -7,6 +7,7 @@ import { DiagnosticsError } from "@/postprocess/error"
 import { createArbitraryPlugin } from "@/postprocess/plugins/arbitrary"
 import { createFamilyPlugin } from "@/postprocess/plugins/family"
 import { createOpacityPlugin } from "@/postprocess/plugins/opacity"
+import { createSizePlugin } from "@/postprocess/plugins/size"
 import { scan } from "@/postprocess/scan"
 import { text } from "@/text"
 
@@ -76,6 +77,10 @@ function buildPlugins(config: TuneConfig, policy: StrictPolicy | undefined): Sca
     plugins.push(createFamilyPlugin(config.theme ?? {}))
 
   plugins.push(createOpacityPlugin())
+
+  if (config.size !== undefined)
+    plugins.push(createSizePlugin(config.size))
+
   return plugins
 }
 
