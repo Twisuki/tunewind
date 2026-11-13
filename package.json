@@ -56,7 +56,9 @@
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "commitlint": "commitlint --edit",
-    "docs": "ohdoc dev",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview",
     "prepare": "husky",
     "build": "tsdown",
     "prepack": "pnpm build"
@@ -74,12 +76,14 @@
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@types/node": "^26.6.6",
-    "@xtwis/ohdoc": "^1.2.1",
     "eslint": "^10.14.0",
     "eslint-plugin-format": "^2.0.1",
     "husky": "^9.1.7",
     "postcss": "^8.5.32",
     "tsdown": "^0.23.5",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitepress": "2.0.0-alpha.21",
+    "vitepress-sidebar": "^1.41.0",
+    "vue": "^3.5.45"
   }
 }
