@@ -1,7 +1,7 @@
 {
   "name": "tunewind",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageManager": "pnpm@11.24.0",
   "description": "A highly configurable, strongly constrained, and extensible atomic CSS solution and design system",
   "author": "Twisuki",
