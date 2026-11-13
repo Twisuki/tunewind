@@ -4,6 +4,8 @@
 
 Bring design system standards to Tailwind !
 
+[English](./README.md) | [简体中文](./README_ZH.md)
+
 [![npm version](https://img.shields.io/npm/v/tunewind)](https://www.npmjs.com/package/tunewind)
 [![CI](https://img.shields.io/github/actions/workflow/status/Twisuki/tunewind/ci.yml?branch=main)](https://github.com/Twisuki/tunewind/actions)
 [![License](https://img.shields.io/npm/l/tunewind)](./LICENSE)
@@ -17,8 +19,6 @@ Bring design system standards to Tailwind !
 ```bash
 pnpm add -D tunewind postcss tailwindcss @tailwindcss/postcss
 ```
-
-Not published to npm yet; link the repository locally until it is.
 
 ### 2. PostCSS plugins
 
