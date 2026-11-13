@@ -28,7 +28,6 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          registry-url: https://registry.npmjs.org
 
       - name: Install
         run: pnpm install --frozen-lockfile
@@ -42,5 +41,3 @@ jobs:
           publish-script: pnpm changeset publish
           commit-message: "chore(version): release"
           pr-title: "chore(version): release"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
