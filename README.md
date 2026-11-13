@@ -104,6 +104,10 @@ This is the difference Tunewind makes: a class exists only if the config allows 
 
 Full documentation: <https://tune.twis.uk/>.
 
+## Changelog
+
+[CHANGELOG.md](./CHANGELOG.md)
+
 ## License
 
 [MIT](./LICENSE)
