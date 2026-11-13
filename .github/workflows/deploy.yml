@@ -41,8 +41,6 @@ jobs:
 
       - name: Build docs
         run: pnpm run docs:build
-        env:
-          DOCS_BASE: /${{ github.event.repository.name }}/
 
       - name: Upload pages
         uses: actions/upload-pages-artifact@v3

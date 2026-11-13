@@ -1,11 +1,7 @@
 import type { UserConfig } from "vitepress"
 import type { VitePressSidebarOptions } from "vitepress-sidebar/types"
-import process from "node:process"
 import { defineConfig } from "vitepress"
 import { withSidebar } from "vitepress-sidebar"
-
-/** site base, a project page is served under its repository name */
-const base = process.env.DOCS_BASE ?? "/"
 
 const sidebarOptions = {
   documentRootPath: "docs",
@@ -37,8 +33,10 @@ const config = {
   srcDir: "docs",
   title: "Tunewind",
   description: "A highly configurable, strongly constrained and extensible atomic CSS solution and design system.",
-  base,
   lastUpdated: true,
+  sitemap: {
+    hostname: "https://tune.twis.uk",
+  },
   themeConfig: {
     socialLinks: [
       { icon: "github", link: "https://github.com/Twisuki/tunewind" },

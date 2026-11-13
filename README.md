@@ -102,7 +102,7 @@ This is the difference Tunewind makes: a class exists only if the config allows 
 
 ## Documentation
 
-Full documentation is coming soon.
+Full documentation: <https://tune.twis.uk/>.
 
 ## License
 
