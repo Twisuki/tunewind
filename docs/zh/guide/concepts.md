@@ -25,21 +25,28 @@ Tunewind 不改变 Tailwind 的语法与用法. 类名结构, 变体, 断点与�
 - **别名**: 语义命名. `palette` 的字符串写法, `{ primary: "sky" }` 之后 `primary` 与 `sky` 指向同一组色阶.
 - **映射**: 可用档位与透明度. `shade` 与 `opacity` 的键名直接成为类名后缀, 未声明的键不可用.
 
+明暗是 `palette` 与 `shade` 之上的第二个维度. 值可以是普通值, 也可以是明暗成对的值:
+
+```ts
+palette: { primary: { light: "sky", dark: "slate" } },
+shade: { default: { light: 600, dark: 500 }, subtle: 300 },
+```
+
 以主色为例:
 
 ```ts
 theme: {
-  palette: { primary: "sky" },
-  shade: { default: 600, subtle: 300 },
+  palette: { primary: { light: "sky", dark: "slate" } },
+  shade: { default: { light: 600, dark: 500 }, subtle: 300 },
   opacity: { default: 100, weak: 80 },
 }
 ```
 
-- `text-primary` 取默认档 `600`.
-- `text-primary-subtle` 取 `300`.
-- `bg-primary/weak` 使用 `80%` 的透明度.
+- `text-primary` 在亮色下取 `600`, 暗色下取 `500`.
+- `text-primary-subtle` 在两种模式下都取 `300`.
+- `bg-primary/weak` 在两种模式下都使用 `80%` 的透明度.
 
-主题在以上三层之上做覆盖. `schemes` 中每个主题只声明与默认主题不同的部分, 页面类名保持不变.
+主题与模式在以上三层之上做覆盖. `schemes` 中每个主题只声明与 base 不同的部分, 页面类名保持不变. 暗色跟随 `prefers-color-scheme`, 不需要额外属性.
 
 需要针对某个主题单独指定时, 使用该主题的 `prefix`, 例如 `ocean:text-primary`.
 

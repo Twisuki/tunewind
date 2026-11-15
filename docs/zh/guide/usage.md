@@ -9,7 +9,7 @@ order: 3
 
 ## 设计
 
-- 颜色: 主色为 `sky`, 正文用 `slate`; 主色需要默认, 弱化, 强调三档; 透明度只用 `100%` 与 `80%`.
+- 颜色: 主色亮色为 `sky`, 暗色为 `slate`, 正文用 `slate`; 主色需要默认, 弱化, 强调三档; 透明度只用 `100%` 与 `80%`.
 - 尺寸: 边框与分隔线用 `1px`, 文本间距用 `4px` 基准, 内容卡片用 `4rem`, 布局容器用 `8rem`; 数字不超过 `64`; 大屏基准放宽到 `6px`.
 - 主题: 除默认主题外需要 `ocean`, 主色改为 `teal`.
 - 约束: 禁用任意值与原始色名, 保留放行前缀; 构建时输出违规.
@@ -23,13 +23,13 @@ import { defineConfig } from "tunewind"
 
 export default defineConfig({
   theme: {
-    palette: { primary: "sky", ink: "slate" },
-    shade: { default: 600, subtle: 300, strong: 800 },
+    palette: { primary: { light: "sky", dark: "slate" }, ink: "slate" },
+    shade: { default: { light: 600, dark: 500 }, subtle: 300, strong: 800 },
     opacity: { default: 100, weak: 80 },
     schemes: {
       ocean: {
         prefix: "ocean",
-        palette: { primary: "teal" }
+        palette: { primary: { light: "teal", dark: "cyan" } }
       },
     },
   },
@@ -81,6 +81,8 @@ export default defineConfig({
 语义名之后可以跟档位, 键名直接来自 `shade`; 透明度写在修饰符位置, 键名来自 `opacity`.
 
 颜色随主题变化, 类名无需修改. 针对某个主题单独指定时, 使用该主题的 `prefix` 作为变体.
+
+暗色跟随 `prefers-color-scheme: dark`, 不需要额外属性. `data-theme` 在两种模式下都用于选择主题.
 
 `white` 与 `black` 以及颜色关键字不受限制.
 

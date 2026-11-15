@@ -9,7 +9,7 @@ This page walks through a content site: the rules, the config, and the markup.
 
 ## Design
 
-- Colors: `sky` as primary, `slate` for body text; three shades for primary; opacity limited to `100%` and `80%`.
+- Colors: `sky` as primary in light and `slate` in dark, `slate` for body text; three shades for primary; opacity limited to `100%` and `80%`.
 - Sizes: `1px` for borders and dividers, `4px` as the text-spacing basis, `4rem` for content cards, `8rem` for layout containers; numbers up to `64`; a wider basis of `6px` on large screens.
 - Theme: an `ocean` scheme on top of the default, with `teal` as primary.
 - Constraints: arbitrary values and raw color names disabled, the escape prefix kept, violations printed at build time.
@@ -23,13 +23,13 @@ import { defineConfig } from "tunewind"
 
 export default defineConfig({
   theme: {
-    palette: { primary: "sky", ink: "slate" },
-    shade: { default: 600, subtle: 300, strong: 800 },
+    palette: { primary: { light: "sky", dark: "slate" }, ink: "slate" },
+    shade: { default: { light: 600, dark: 500 }, subtle: 300, strong: 800 },
     opacity: { default: 100, weak: 80 },
     schemes: {
       ocean: {
         prefix: "ocean",
-        palette: { primary: "teal" },
+        palette: { primary: { light: "teal", dark: "cyan" } },
       },
     },
   },
@@ -81,6 +81,8 @@ The entry stylesheet and `tune.config.ts` both belong to configuration. `@utilit
 A shade key can follow the color name, and the key comes from `shade`; an opacity key goes in the modifier slot and comes from `opacity`.
 
 Colors follow the theme without class changes. Use the scheme's `prefix` as a variant to override a color for one theme.
+
+Dark mode follows `prefers-color-scheme: dark`; no extra attribute is needed. `data-theme` selects the theme in both modes.
 
 `white` and `black`, as well as the color keywords, are unrestricted.
 

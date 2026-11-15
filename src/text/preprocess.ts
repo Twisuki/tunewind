@@ -6,5 +6,6 @@ export const preprocess = {
   rangeReversed: (unit: string) => `size unit "${unit}" has larger min than max`,
   shadeMissing: (family: string, shade: number) => `color family "${family}" has no shade ${shade}`,
   themeDuplicated: (theme: string) => `theme "${theme}" is defined more than once`,
+  themeReserved: (theme: string) => `theme "${theme}" is reserved for the light or dark mode`,
   unknownUnit: (breakpoint: string, unit: string) => `breakpoint "${breakpoint}" overrides unknown unit "${unit}"`,
 }

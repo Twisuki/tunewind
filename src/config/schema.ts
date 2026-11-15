@@ -13,6 +13,25 @@ const colorValue = z.string().min(1)
 /** config key, limited to word characters */
 const keySchema = z.string().regex(/^\w+$/, { message: text.config.keyFormat })
 
+/** value that may differ between the light and dark modes */
+function modeValue<T extends z.ZodType>(
+  schema: T,
+): z.ZodType<z.output<T> | { light?: z.output<T>, dark?: z.output<T> }> {
+  return z.union([
+    schema,
+    z
+      .strictObject({
+        /** value in the light mode */
+        light: schema.optional(),
+        /** value in the dark mode */
+        dark: schema.optional(),
+      })
+      .refine(value => value.light !== undefined || value.dark !== undefined, {
+        message: text.config.modeValueEmpty,
+      }),
+  ])
+}
+
 /** built-in color family name */
 const colorFamilySchema = z.enum(COLOR_FAMILIES)
 
@@ -28,11 +47,11 @@ const colorScaleSchema = z.record(z.string().regex(/^\d+$/), colorValue).refine(
 /** palette entry, an alias to a built-in family or an explicit scale */
 const paletteEntrySchema = z.union([colorFamilySchema, colorScaleSchema])
 
-/** color families, alias name to family or scale */
-export const paletteSchema = z.record(keySchema, paletteEntrySchema)
+/** color families, alias name to family or scale, optionally per mode */
+export const paletteSchema = z.record(keySchema, modeValue(paletteEntrySchema))
 
-/** shade mapping, semantic key to shade number */
-export const shadeSchema = z.record(keySchema, colorShadeSchema)
+/** shade mapping, semantic key to shade number, optionally per mode */
+export const shadeSchema = z.record(keySchema, modeValue(colorShadeSchema))
 
 /** opacity mapping, semantic key to percentage */
 export const opacitySchema = z.record(keySchema, z.number().min(0).max(100))
@@ -146,7 +165,9 @@ export const configSchema = z.strictObject({
 })
 
 export type TunePalette = z.output<typeof paletteSchema>
+export type TunePaletteEntry = z.output<typeof paletteEntrySchema>
 export type TuneShade = z.output<typeof shadeSchema>
+export type TuneShadeValue = z.output<typeof colorShadeSchema>
 export type TuneOpacity = z.output<typeof opacitySchema>
 export type TuneScheme = z.output<typeof schemeSchema>
 export type TuneTheme = z.output<typeof themeSchema>

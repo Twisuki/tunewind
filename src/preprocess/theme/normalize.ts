@@ -1,30 +1,93 @@
-import type { TuneOpacity, TunePalette, TuneShade } from "@/config/schema"
+import type { TuneOpacity, TunePalette, TunePaletteEntry, TuneShade, TuneShadeValue } from "@/config/schema"
 import type { ColorShade } from "@/const/tailwind"
-import type { ThemeGroup, ThemePalette, ThemeTable, ThemeValue } from "@/preprocess/theme/types"
+import type { ThemeLayers, ThemeMode, ThemeModes, ThemePalette, ThemeTable, ThemeValue } from "@/preprocess/theme/types"
 import { COLOR_FAMILIES, COLOR_SHADES, PALETTE } from "@/const/tailwind"
 import { output } from "@/plugins/output"
 import { text } from "@/text"
 
-/** fold a theme config into a group, filling the absent dimensions */
-export function groupOf(theme: { palette?: TunePalette, shade?: TuneShade, opacity?: TuneOpacity }): ThemeGroup {
+/** value that may define a separate light and dark form */
+type ModeEntry<T> = T | { light?: T, dark?: T }
+
+/** whether an entry is a light and dark pair instead of a plain value */
+function isModeEntry<T>(value: unknown): value is { light?: T, dark?: T } {
+  return typeof value === "object" && value !== null
+    && (Object.hasOwn(value, "light") || Object.hasOwn(value, "dark"))
+}
+
+/** resolve one entry for a mode, the fill flag controls inheritance */
+function splitValue<T>(value: ModeEntry<T>, mode: ThemeMode, fill: boolean): T | undefined {
+  if (!isModeEntry(value)) {
+    if (mode === "dark" && !fill)
+      return undefined
+
+    return value
+  }
+
+  if (mode === "light")
+    return value.light ?? (fill ? value.dark : undefined)
+
+  return value.dark ?? (fill ? value.light : undefined)
+}
+
+/** resolve one layer for a mode into a flat record */
+function splitLayer<T>(
+  source: Record<string, ModeEntry<T>> | undefined,
+  mode: ThemeMode,
+  fill: boolean,
+): Record<string, T> {
+  const layer: Record<string, T> = {}
+
+  for (const [key, value] of Object.entries(source ?? {})) {
+    const resolved = splitValue(value, mode, fill)
+    if (resolved !== undefined)
+      layer[key] = resolved
+  }
+
+  return layer
+}
+
+/** merge one color patch over a base, key by key */
+function mergeLayers(base: ThemeLayers, patch: ThemeLayers): ThemeLayers {
   return {
-    palette: theme.palette ?? {},
-    shade: theme.shade ?? {},
+    palette: {
+      ...base.palette,
+      ...patch.palette,
+    },
+    shade: {
+      ...base.shade,
+      ...patch.shade,
+    },
+  }
+}
+
+/** fold a theme config into both modes, filling the absent sides for the base */
+export function groupOf(
+  theme: { palette?: TunePalette, shade?: TuneShade, opacity?: TuneOpacity },
+  isBase = true,
+): ThemeModes {
+  const light: ThemeLayers = {
+    palette: splitLayer<TunePaletteEntry>(theme.palette, "light", isBase),
+    shade: splitLayer<TuneShadeValue>(theme.shade, "light", isBase),
+  }
+  const dark: ThemeLayers = {
+    palette: splitLayer<TunePaletteEntry>(theme.palette, "dark", false),
+    shade: splitLayer<TuneShadeValue>(theme.shade, "dark", false),
+  }
+
+  return {
+    light,
+    dark: isBase
+      ? mergeLayers(light, dark)
+      : dark,
     opacity: theme.opacity ?? {},
   }
 }
 
-/** merge a scheme group over the default group, name by name */
-export function mergeGroup(base: ThemeGroup, scheme: ThemeGroup): ThemeGroup {
+/** merge a scheme group over the default group, mode by mode */
+export function mergeGroup(base: ThemeModes, scheme: ThemeModes): ThemeModes {
   return {
-    palette: {
-      ...base.palette,
-      ...scheme.palette,
-    },
-    shade: {
-      ...base.shade,
-      ...scheme.shade,
-    },
+    light: mergeLayers(base.light, scheme.light),
+    dark: mergeLayers(base.dark, scheme.dark),
     opacity: {
       ...base.opacity,
       ...scheme.opacity,
@@ -33,7 +96,7 @@ export function mergeGroup(base: ThemeGroup, scheme: ThemeGroup): ThemeGroup {
 }
 
 /** build the palette of every usable color name */
-function buildPalette(palette: TunePalette): ThemePalette {
+function buildPalette(palette: Record<string, TunePaletteEntry>): ThemePalette {
   const themePalette: ThemePalette = new Map()
   // copy the builtin palette
   for (const family of COLOR_FAMILIES) {
@@ -67,7 +130,7 @@ function buildPalette(palette: TunePalette): ThemePalette {
 }
 
 /** build the color table of every usable color name by the shade mapping */
-function buildTable(themePalette: ThemePalette, shade: TuneShade): ThemeTable {
+function buildTable(themePalette: ThemePalette, shade: Record<string, TuneShadeValue>): ThemeTable {
   const table: ThemeTable = new Map()
 
   for (const [name, scale] of themePalette) {
@@ -86,6 +149,6 @@ function buildTable(themePalette: ThemePalette, shade: TuneShade): ThemeTable {
 }
 
 /** resolve palette and shade mapping into the color table of every usable name */
-export function normalize(palette: TunePalette, shade: TuneShade): ThemeTable {
+export function normalize(palette: Record<string, TunePaletteEntry>, shade: Record<string, TuneShadeValue>): ThemeTable {
   return buildTable(buildPalette(palette), shade)
 }

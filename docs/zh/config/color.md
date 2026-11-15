@@ -12,11 +12,11 @@ order: 1
 ```ts
 theme: {
   palette: {
-    primary: "sky",
+    primary: { light: "sky", dark: "slate" },
     ink: "slate",
   },
   shade: {
-    default: 600,
+    default: { light: 600, dark: 500 },
     subtle: 300,
     strong: 800,
   },
@@ -41,6 +41,19 @@ theme: {
 
 键名即类名后缀, 取值必须是内置档位 `50` 到 `950` 之一. `default` 作为键名时不带后缀, 因此 `text-primary` 取 `default` 对应的档位.
 
+### 明暗
+
+`palette` 与 `shade` 的值可以是普通值, 也可以是明暗成对的值:
+
+```ts
+primary: { light: "sky", dark: "slate" }
+default: { light: 600, dark: 500 }
+```
+
+默认模式是亮色. 需要暗色时显式写 `dark`; 未写的一侧沿用 base 的对应值.
+
+`opacity` 不参与明暗成对写法, 它是一份亮暗共用的映射.
+
 ### opacity
 
 键名即颜色修饰符, 取值是 `0` 到 `100` 的数字. `default` 在这里没有特殊含义, 与其他键等价.
@@ -50,6 +63,8 @@ theme: {
 颜色名来自 `palette`, 档位与透明度来自 `shade` 与 `opacity`, 三者组合成完整类名. 未列出的键不可用, Tailwind 原有的数字档位与默认修饰符随之消失.
 
 未在 `palette` 中声明的内置家族不会被自动移除, 是否保留取决于[严格模式](./strict.md)中的 `family` 检查; 任意颜色值, 例如 `text-[#fff]`, 由同一处的 `arbitrary` 检查控制.
+
+亮色值声明在 `@theme` 中, 暗色值在 `@media (prefers-color-scheme: dark)` 下覆盖. 暗色跟随系统偏好.
 
 `white` 与 `black` 只有单体, 不存在 `text-white-subtle` 这类档位写法, 带透明度时仍需声明对应的 `opacity` 键. `transparent`, `current`, `inherit` 三个关键字始终可用.
 
@@ -77,7 +92,7 @@ theme: {
 }
 ```
 
-命名规则为 `--color-<名>`, `--color-<名>-<键>`, `--opacity-<键>`.
+命名规则为 `--color-<名>`, `--color-<名>-<键>`, `--opacity-<键>`. 自定义样式不需要写暗色分支, `var(--color-primary)` 会自动取当前模式的值.
 
 ## 报错
 
@@ -88,6 +103,12 @@ color family "primary" has no shade 400
 ```
 
 色阶为空, 或键名不符合 `[A-Za-z0-9_]+` 时同样会直接报错.
+
+明暗成对的值两侧都缺失时也会报错:
+
+```text
+mode value must define light or dark
+```
 
 ## 相关
 

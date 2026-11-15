@@ -5,6 +5,9 @@ import { FLAT_COLORS } from "@/const/tailwind"
 /** theme namespace reset by a block */
 type ThemeSpace = "color" | "opacity"
 
+/** media query of the dark mode */
+const DARK_QUERY = "(prefers-color-scheme: dark)"
+
 /** build one color declaration, omitting the suffix of the default shade */
 function buildColor(name: string, value: string, key?: string): string {
   const suffix = key === undefined || key === "default"
@@ -80,6 +83,21 @@ export function wrapTheme(content: string[], space: ThemeSpace, theme?: string):
   return [
     `[data-theme="${theme}"] {`,
     ...content,
+    "}",
+  ]
+}
+
+/** wrap theme content into the dark mode block */
+export function wrapDark(content: string[], theme?: string): string[] {
+  const selector = theme === undefined
+    ? ":root, :host"
+    : `[data-theme="${theme}"]`
+
+  return [
+    `@media ${DARK_QUERY} {`,
+    `  ${selector} {`,
+    ...content.map(line => `  ${line}`),
+    "  }",
     "}",
   ]
 }

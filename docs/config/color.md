@@ -12,11 +12,11 @@ Colors are determined by `theme.palette`, `theme.shade` and `theme.opacity`: the
 ```ts
 theme: {
   palette: {
-    primary: "sky",
+    primary: { light: "sky", dark: "slate" },
     ink: "slate",
   },
   shade: {
-    default: 600,
+    default: { light: 600, dark: 500 },
     subtle: 300,
     strong: 800,
   },
@@ -41,6 +41,19 @@ The object form defines a custom scale, with shade numbers as keys and any CSS c
 
 The key becomes the class suffix and must be one of the built-in shades `50` to `950`. `default` produces no suffix, so `text-primary` uses the shade mapped to `default`.
 
+### light and dark
+
+A `palette` or `shade` value may be a plain value or a light and dark pair:
+
+```ts
+primary: { light: "sky", dark: "slate" }
+default: { light: 600, dark: 500 }
+```
+
+The default mode is light. Write `dark` to override dark mode; an omitted side keeps the base value.
+
+`opacity` is not part of the pair. It is one mapping shared by both modes.
+
 ### opacity
 
 The key becomes the color modifier and must be a number from `0` to `100`. `default` has no special meaning here and equals any other key.
@@ -50,6 +63,8 @@ The key becomes the color modifier and must be a number from `0` to `100`. `defa
 A color name comes from `palette`, the shade and opacity from `shade` and `opacity`; the three combine into a class name. Keys left out are unavailable, and Tailwind's numeric shades and default modifiers disappear with them.
 
 Built-in families not declared in `palette` are not removed automatically; whether they survive depends on the `family` check in [strict mode](./strict.md). Arbitrary colors such as `text-[#fff]` are controlled by the `arbitrary` check there.
+
+Light values are declared in `@theme`; dark values are overridden under `@media (prefers-color-scheme: dark)`. Dark mode follows the system preference.
 
 `white` and `black` are single values: there is no `text-white-subtle`, and opacity still requires a matching `opacity` key. The `transparent`, `current` and `inherit` keywords are always available.
 
@@ -77,7 +92,7 @@ Colors are exposed as variables, which custom styles can reference directly:
 }
 ```
 
-The naming is `--color-<name>`, `--color-<name>-<key>` and `--opacity-<key>`.
+The naming is `--color-<name>`, `--color-<name>-<key>` and `--opacity-<key>`. Custom styles do not need a dark branch; `var(--color-primary)` already resolves to the value of the active mode.
 
 ## Errors
 
@@ -88,6 +103,12 @@ color family "primary" has no shade 400
 ```
 
 An empty scale, or a key that does not match `[A-Za-z0-9_]+`, fails as well.
+
+A light and dark pair with neither side fails as well:
+
+```text
+mode value must define light or dark
+```
 
 ## Related
 

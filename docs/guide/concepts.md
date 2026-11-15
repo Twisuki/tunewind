@@ -25,21 +25,28 @@ The color system has three layers.
 - **Aliases**: semantic names. The string form of `palette`, where `{ primary: "sky" }` makes `primary` and `sky` point to the same scale.
 - **Mappings**: the available shades and opacities. Keys of `shade` and `opacity` become class suffixes; undeclared keys are unavailable.
 
+Light and dark are a second dimension on `palette` and `shade`. A value can be a plain value or a light and dark pair:
+
+```ts
+palette: { primary: { light: "sky", dark: "slate" } },
+shade: { default: { light: 600, dark: 500 }, subtle: 300 },
+```
+
 With the primary color as an example:
 
 ```ts
 theme: {
-  palette: { primary: "sky" },
-  shade: { default: 600, subtle: 300 },
+  palette: { primary: { light: "sky", dark: "slate" } },
+  shade: { default: { light: 600, dark: 500 }, subtle: 300 },
   opacity: { default: 100, weak: 80 },
 }
 ```
 
-- `text-primary` uses the default shade, `600`.
-- `text-primary-subtle` uses `300`.
-- `bg-primary/weak` uses `80%` opacity.
+- `text-primary` uses `600` in light mode and `500` in dark mode.
+- `text-primary-subtle` uses `300` in both modes.
+- `bg-primary/weak` uses `80%` opacity in both modes.
 
-Themes override these three layers. Each scheme declares only what differs from the default theme, and class names stay unchanged.
+Themes and modes override these layers. Each scheme declares only what differs from the base, and class names stay unchanged. Dark mode follows `prefers-color-scheme`, with no extra attribute.
 
 Use a scheme's `prefix` when a color must be set explicitly for one theme, such as `ocean:text-primary`.
 
